@@ -260,6 +260,7 @@
         
          <activity
             android:name="itstudio.instructor.ui.NoticeDetailActivity"
+            android:theme="@style/TranslucentTheme"
             android:screenOrientation="portrait" >
         </activity>
          <activity
