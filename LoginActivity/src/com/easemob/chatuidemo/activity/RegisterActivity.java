@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EaseMobException;
 
@@ -84,7 +84,7 @@ public class RegisterActivity extends BaseActivity {
 								if (!RegisterActivity.this.isFinishing())
 									pd.dismiss();
 								// 保存用户名
-								DemoApplication.getInstance().setUserName(username);
+								MyApplication.getInstance().setUserName(username);
 								Toast.makeText(getApplicationContext(), "注册成功", 0).show();
 								finish();
 							}

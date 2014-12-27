@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo;
 
+import itstudio.instructor.entity.User;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +22,6 @@ import android.content.Context;
 import com.easemob.applib.model.DefaultHXSDKModel;
 import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
-import com.easemob.chatuidemo.domain.User;
 
 public class DemoHXSDKModel extends DefaultHXSDKModel{
 

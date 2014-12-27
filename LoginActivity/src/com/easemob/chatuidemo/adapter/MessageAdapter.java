@@ -13,6 +13,9 @@
  */
 package com.easemob.chatuidemo.adapter;
 
+import itstudio.instructor.config.Config;
+import itstudio.instructor.config.ImageOptionsUtil;
+
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,6 +60,7 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.Constant;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.AlertDialog;
 import com.easemob.chatuidemo.activity.BaiduMapActivity;
@@ -77,6 +81,8 @@ import com.easemob.util.EMLog;
 import com.easemob.util.FileUtils;
 import com.easemob.util.LatLng;
 import com.easemob.util.TextFormater;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
 
 public class MessageAdapter extends BaseAdapter{
@@ -307,10 +313,22 @@ public class MessageAdapter extends BaseAdapter{
 		}
 
 		// 群聊时，显示接收的消息的发送人的名称
-		if (chatType == ChatType.GroupChat && message.direct == EMMessage.Direct.RECEIVE)
-			// demo用username代替nick
-			holder.tv_userId.setText(message.getFrom());
-
+		if (chatType == ChatType.GroupChat && message.direct == EMMessage.Direct.RECEIVE){
+		    
+		    // demo用username代替nick
+		    holder.tv_userId.setText(message.getFrom());
+		   // holder.iv.
+		    // 用名字代替
+		}
+		// 显示头像
+		 //holder.iv.
+		System.out.println(MyApplication.user==null);
+		System.out.println(MyApplication.getInstance().getUserName());
+		System.out.println(MyApplication.getInstance().getPassword());
+		if(MyApplication.user!=null){
+		    System.out.println("shehzitouxiang"+MyApplication.user.getHeadUrl());
+		    ImageLoader.getInstance().displayImage(Config.HEAD_URL+MyApplication.user.getHeadUrl(),holder.iv, ImageOptionsUtil.headImageOptions());
+		}
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatType.GroupChat) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);

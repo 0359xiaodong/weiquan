@@ -1,0 +1,79 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="66dp"
+    android:background="@drawable/listview_selector"
+    android:orientation="vertical" >
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal" >
+        
+        <itstudio.instructor.widget.RoundedImageView
+           	android:id="@+id/image"
+           	android:layout_width="48dp"
+           	android:adjustViewBounds="true"
+           	android:layout_height="48dp"
+            android:scaleType="centerCrop"/>
+        <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+        	<TextView
+	            android:id="@+id/txt_title"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:layout_marginLeft="8dip"
+	            android:ellipsize="end"
+	            android:singleLine="true"
+	            android:textColor="@color/black"
+	            android:textSize="@dimen/large_text_size" />
+        	<TextView
+	            android:id="@+id/txt_short_content"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="3dp"
+	            android:layout_marginLeft="8dip"
+	            android:ellipsize="end"
+	            android:text="美猴王驾到，显出原型来,美猴王驾到，显出原型来,美猴王驾到，显出原型来,美猴王驾到，显出原型来,"
+	            android:singleLine="true"
+	            android:textColor="@color/light_black"
+	            android:textSize="@dimen/medium_text_size" />
+         </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/txt_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="美猴王"
+            android:layout_marginLeft="7dp"
+            android:textColor="#898989"
+            android:textSize="@dimen/micro_text_size" />
+
+        <TextView
+            android:id="@+id/txt_date"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:text="2014/5/8"
+            android:gravity="center_vertical|right"
+            android:textColor="#898989"
+            android:textSize="@dimen/micro_text_size" />
+    </LinearLayout>
+	
+</LinearLayout>

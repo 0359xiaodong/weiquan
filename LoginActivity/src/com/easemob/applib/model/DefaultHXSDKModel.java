@@ -19,6 +19,7 @@ package com.easemob.applib.model;
 
 import com.easemob.applib.utils.HXPreferenceUtils;
 import com.easemob.chatuidemo.db.UserDao;
+import com.easemob.chatuidemo.utils.AESCipher;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ import android.preference.PreferenceManager;
 public class DefaultHXSDKModel extends HXSDKModel{
     private static final String PREF_USERNAME = "username";
     private static final String PREF_PWD = "pwd";
+    private static final String PREF_USER_JSON = "userJson";
     UserDao dao = null;
     protected Context context = null;
     
@@ -112,6 +114,7 @@ public class DefaultHXSDKModel extends HXSDKModel{
     public boolean savePassword(String pwd) {
         // TODO Auto-generated method stub
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        pwd= AESCipher.encrypt(AESCipher.key, pwd);
         return preferences.edit().putString(PREF_PWD, pwd).commit();    
     }
 
@@ -119,6 +122,27 @@ public class DefaultHXSDKModel extends HXSDKModel{
     public String getPwd() {
         // TODO Auto-generated method stub
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString(PREF_PWD, null);
+        String pwd= preferences.getString(PREF_PWD, null);
+        pwd= AESCipher.decrypt(AESCipher.key, pwd);
+        return pwd;
+    }
+   
+
+    @Override
+    public boolean saveUseJSON(String userJson) {
+        // TODO Auto-generated method stub
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        userJson= AESCipher.encrypt(AESCipher.key, userJson);
+        return preferences.edit().putString(PREF_USER_JSON, userJson).commit();  
+    }
+
+    @Override
+    public String getUserJson() {
+        // TODO Auto-generated method stub
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String json= preferences.getString(PREF_USER_JSON, null);
+        if(json!=null)
+        json= AESCipher.decrypt(AESCipher.key, json);
+        return json;
     }
 }

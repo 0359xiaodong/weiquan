@@ -31,7 +31,7 @@
     <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
  
     <application
-        android:name="DemoApplication"
+        android:name="MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/logo_uidemo"
         android:label="@string/app_name" >
@@ -258,7 +258,21 @@
             android:value="53912a3156240b01a7075ed1" >
         </meta-data>
         
-        
+         <activity
+            android:name="itstudio.instructor.ui.NoticeDetailActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+         <activity
+            android:name="itstudio.instructor.ui.NewsDetailActivity"
+            android:theme="@style/TranslucentTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" 
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="itstudio.instructor.ui.PhotoViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TranslucentTheme" >
+        </activity>
     </application>
 
 </manifest>

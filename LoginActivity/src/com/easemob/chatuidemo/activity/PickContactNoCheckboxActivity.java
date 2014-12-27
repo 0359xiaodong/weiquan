@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.entity.User;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,10 +32,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.widget.Sidebar;
 
 public class PickContactNoCheckboxActivity extends BaseActivity {
@@ -80,7 +81,7 @@ public class PickContactNoCheckboxActivity extends BaseActivity {
 
 	private void getContactList() {
 		contactList.clear();
-		Map<String, User> users = DemoApplication.getInstance().getContactList();
+		Map<String, User> users = MyApplication.getInstance().getContactList();
 		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, User> entry = iterator.next();

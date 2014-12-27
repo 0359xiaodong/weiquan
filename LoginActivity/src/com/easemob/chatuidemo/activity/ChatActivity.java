@@ -78,7 +78,7 @@ import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
@@ -310,6 +310,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
 			((TextView) findViewById(R.id.name)).setText(toChatUsername);
+			
+			// 再此获取头像
+			
+			
 			// conversation =
 			// EMChatManager.getInstance().getConversation(toChatUsername,false);
 		} else {
@@ -572,7 +576,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			return;
 		}
 
-		cameraFile = new File(PathUtil.getInstance().getImagePath(), DemoApplication.getInstance().getUserName()
+		cameraFile = new File(PathUtil.getInstance().getImagePath(), MyApplication.getInstance().getUserName()
 				+ System.currentTimeMillis() + ".jpg");
 		cameraFile.getParentFile().mkdirs();
 		startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile)),
@@ -986,12 +990,29 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 如果是群聊消息，获取到group id
 			if (message.getChatType() == ChatType.GroupChat) {
 				username = message.getTo();
+				System.out.println("username-group"+username);
 			}
 			if (!username.equals(toChatUsername)) {
 				// 消息不是发给当前会话，return
 			    notifyNewMessage(message);
 				return;
 			}
+			
+			
+			
+/*		     if (from.equals("history")) {// 从本地缓存中获取
+		            nameTextView.setText(talkToId);
+		            if (!GroupUtils.isGroup(talkToId))
+		                NameUrlUtils.setNickNameAndHead(nameTextView, null, talkToId);
+		            else
+		                NameUrlUtils.setGroupName(talkToId, nameTextView);
+		        } else if (from.equals("friends") || from.equals("group")) {
+		            String name = in.getStringExtra("name");
+		            if (name.startsWith("_") && from.equals("group"))
+		                name = name.substring(1, name.length());
+		            nameTextView.setText(name);
+		        }*/
+			
 			// conversation =
 			// EMChatManager.getInstance().getConversation(toChatUsername);
 			// 通知adapter有新消息，更新ui

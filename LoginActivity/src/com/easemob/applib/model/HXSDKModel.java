@@ -37,6 +37,9 @@ public abstract class HXSDKModel {
     public abstract boolean savePassword(String pwd);
     public abstract String getPwd();
     
+    
+    public abstract boolean saveUseJSON(String json);
+    public abstract String getUserJson();
     /**
      * 是否总是接收好友邀请
      * @return

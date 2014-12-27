@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.db;
 
+import itstudio.instructor.entity.User;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +26,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.domain.User;
+import com.easemob.chatuidemo.utils.AESCipher;
 import com.easemob.util.HanziToPinyin;
 
 public class UserDao {
 	public static final String TABLE_NAME = "uers";
-	public static final String COLUMN_NAME_ID = "username";
+	public static final String COLUMN_NAME_ID = "id";
+	public static final String COLUMN_NAME = "username";
 	public static final String COLUMN_NAME_NICK = "nick";
+	public static final String COLUMNJSON = "userJson";
 	public static final String COLUMN_NAME_IS_STRANGER = "is_stranger";
 
 	private DbOpenHelper dbHelper;
@@ -118,9 +122,15 @@ public class UserDao {
 	public void saveContact(User user){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put(COLUMN_NAME_ID, user.getUsername());
+		values.put(COLUMN_NAME_ID, user.getId());
+		values.put(COLUMN_NAME, user.getUsername());
+		
+		if(user.getUserJson() != null){
+		    
+		    values.put(COLUMNJSON, AESCipher.decrypt(AESCipher.key, user.getUserJson()));
+		}
 		if(user.getNick() != null)
-			values.put(COLUMN_NAME_NICK, user.getNick());
+		    values.put(COLUMN_NAME_NICK, user.getNick());
 		if(db.isOpen()){
 			db.replace(TABLE_NAME, null, values);
 		}

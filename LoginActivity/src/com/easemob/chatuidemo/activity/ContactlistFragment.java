@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.entity.User;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,13 +48,12 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMContactManager;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.DemoHXSDKHelper;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.db.UserDao;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.widget.Sidebar;
 import com.easemob.exceptions.EaseMobException;
 
@@ -102,7 +103,7 @@ public class ContactlistFragment extends Fragment {
 				String username = adapter.getItem(position).getUsername();
 				if (Constant.NEW_FRIENDS_USERNAME.equals(username)) {
 					// 进入申请与通知页面
-					User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+					User user = MyApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 					user.setUnreadMsgCount(0);
 					startActivity(new Intent(getActivity(), NewFriendsMsgActivity.class));
 				} else if (Constant.GROUP_USERNAME.equals(username)) {
@@ -207,7 +208,7 @@ public class ContactlistFragment extends Fragment {
 					// 删除db和内存中此用户的数据
 					UserDao dao = new UserDao(getActivity());
 					dao.deleteContact(tobeDeleteUser.getUsername());
-					DemoApplication.getInstance().getContactList().remove(tobeDeleteUser.getUsername());
+					MyApplication.getInstance().getContactList().remove(tobeDeleteUser.getUsername());
 					getActivity().runOnUiThread(new Runnable() {
 						public void run() {
 							pd.dismiss();
@@ -289,17 +290,16 @@ public class ContactlistFragment extends Fragment {
 		contactList.clear();
 		//获取本地好友列表
 		System.out.println("getContactList()aaa"+contactList.size());
-		Map<String, User> users = DemoApplication.getInstance().getContactList();
+		Map<String, User> users = MyApplication.getInstance().getContactList();
 		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
 		System.out.println("getContactList()bbb"+contactList.size());
 		while (iterator.hasNext()) {
 			Entry<String, User> entry = iterator.next();
 			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME)
 					&& !blackList.contains(entry.getKey())){
-			    System.out.println("if？");
+			   
 			    contactList.add(entry.getValue());
 			}
-			System.out.println("死循环？");
 		}
 		System.out.println("getContactList()ccc"+contactList.size());
 		// 排序
@@ -310,12 +310,12 @@ public class ContactlistFragment extends Fragment {
 				return lhs.getUsername().compareTo(rhs.getUsername());
 			}
 		});
-		System.out.println("getContactList()ffff"+contactList.size());
+	
 		// 加入"申请与通知"和"群聊"
 		contactList.add(0, users.get(Constant.GROUP_USERNAME));
 		// 把"申请与通知"添加到首位
 		contactList.add(0, users.get(Constant.NEW_FRIENDS_USERNAME));
-		System.out.println("getContactList()"+contactList.size());
+		
 	}
 	
 	@Override

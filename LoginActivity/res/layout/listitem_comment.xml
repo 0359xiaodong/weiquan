@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+   	android:paddingTop="5dip"
+	android:paddingBottom="5dip"
+    android:layout_weight="1"
+    android:background="@color/white"
+    android:orientation="vertical" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+		<LinearLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal" >
+			<TextView
+	            android:id="@+id/cm_author_name"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:textColor="@color/blue"
+	            android:singleLine="true"
+	            android:textSize="@dimen/medium_text_size" />
+             <TextView
+                android:id="@+id/tv_reply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/replay"
+                android:visibility="gone"
+                android:textColor="@color/black"
+                android:singleLine="true"
+                android:textSize="@dimen/medium_text_size" />
+              <TextView
+                  android:id="@+id/reply_name"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textColor="@color/blue"
+                  android:singleLine="true"
+                  android:textSize="@dimen/medium_text_size" />
+		</LinearLayout>
+        <LinearLayout
+            android:id="@+id/comment_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:singleLine="true"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="-5dp"
+                android:src="@drawable/icon_comment_small" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="@string/replay"
+                android:singleLine="true"
+                android:textSize="@dimen/small_text_size" />
+        </LinearLayout>
+	</RelativeLayout>
+    <TextView
+        android:id="@+id/comment_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:singleLine="true"
+        android:textColor="@color/light_black"
+        android:textSize="@dimen/micro_text_size" />
+
+     <TextView
+         android:id="@+id/comment_content"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="10dp"
+         android:textColor="@color/black"
+         android:textSize="@dimen/medium_text_size" />
+     </LinearLayout>

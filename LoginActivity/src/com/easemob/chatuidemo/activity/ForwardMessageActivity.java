@@ -13,11 +13,11 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.entity.User;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.domain.User;
 
 public class ForwardMessageActivity extends PickContactNoCheckboxActivity {
 	private User selectUser;

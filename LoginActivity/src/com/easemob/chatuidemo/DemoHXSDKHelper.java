@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo;
 
+import itstudio.instructor.entity.User;
+
 import java.util.Map;
 
 import android.content.Intent;
@@ -30,7 +32,6 @@ import com.easemob.chat.OnMessageNotifyListener;
 import com.easemob.chat.OnNotificationClickListener;
 import com.easemob.chatuidemo.activity.ChatActivity;
 import com.easemob.chatuidemo.activity.MainActivity;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.receiver.VoiceCallReceiver;
 import com.easemob.chatuidemo.utils.CommonUtils;
 

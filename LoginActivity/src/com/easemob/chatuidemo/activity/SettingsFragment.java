@@ -32,7 +32,7 @@ import com.easemob.EMCallBack;
 import com.easemob.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.DemoHXSDKHelper;
 import com.easemob.chatuidemo.R;
 
@@ -279,7 +279,7 @@ public class SettingsFragment extends Fragment implements OnClickListener {
 		pd.setMessage("正在退出登陆..");
 		pd.setCanceledOnTouchOutside(false);
 		pd.show();
-		DemoApplication.getInstance().logout(new EMCallBack() {
+		MyApplication.getInstance().logout(new EMCallBack() {
 			
 			@Override
 			public void onSuccess() {

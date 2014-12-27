@@ -13,6 +13,10 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.entity.User;
+import itstudio.instructor.fragment.FragmentHome;
+import itstudio.instructor.fragment.FragmentSetting;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,14 +53,13 @@ import com.easemob.chat.EMNotifier;
 import com.easemob.chat.GroupChangeListener;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.DemoHXSDKHelper;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
@@ -75,9 +78,9 @@ View.OnClickListener {
 	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
 	// private ChatHistoryFragment chatHistoryFragment;
-	private HomeFragment homeFragment;
+	private FragmentHome homeFragment;
 	private ChatAllHistoryFragment chatHistoryFragment;
-	private SettingsFragment settingFragment;
+	private FragmentSetting settingFragment;
 	private Fragment[] fragments;
 	private int index;
 	// 当前fragment的index
@@ -113,10 +116,10 @@ View.OnClickListener {
 		// 这个fragment只显示好友和群组的聊天记录
 		// chatHistoryFragment = new ChatHistoryFragment();
 		// 显示所有人消息记录的fragment
-		homeFragment = new HomeFragment();
+		homeFragment = new FragmentHome();
 		chatHistoryFragment = new ChatAllHistoryFragment();
 		contactListFragment = new ContactlistFragment();
-		settingFragment = new SettingsFragment();
+		settingFragment = new FragmentSetting();
 		fragments = new Fragment[] { homeFragment,chatHistoryFragment, contactListFragment, settingFragment };
 		// 添加显示第一个fragment
 		getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, homeFragment)
@@ -274,8 +277,8 @@ View.OnClickListener {
 	public int getUnreadAddressCountTotal() {
 	    int unreadAddressCountTotal = 0;
 	    if (DemoHXSDKHelper.getInstance().isLogined()) {
-		if (DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME) != null)
-			unreadAddressCountTotal = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).getUnreadMsgCount();
+		if (MyApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME) != null)
+			unreadAddressCountTotal = MyApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME).getUnreadMsgCount();
 	    }
 	    return unreadAddressCountTotal;
 	}
@@ -456,7 +459,7 @@ View.OnClickListener {
 		@Override
 		public void onContactAdded(List<String> usernameList) {
 			// 保存增加的联系人
-			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
+			Map<String, User> localUsers = MyApplication.getInstance().getContactList();
 			Map<String, User> toAddUsers = new HashMap<String, User>();
 			for (String username : usernameList) {
 				User user = setUserHead(username);
@@ -476,7 +479,7 @@ View.OnClickListener {
 		@Override
 		public void onContactDeleted(final List<String> usernameList) {
 			// 被删除
-			Map<String, User> localUsers = DemoApplication.getInstance().getContactList();
+			Map<String, User> localUsers = MyApplication.getInstance().getContactList();
 			for (String username : usernameList) {
 				localUsers.remove(username);
 				userDao.deleteContact(username);
@@ -574,7 +577,7 @@ View.OnClickListener {
 		// 保存msg
 		inviteMessgeDao.saveMessage(msg);
 		// 未读数加1
-		User user = DemoApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
+		User user = MyApplication.getInstance().getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 		if (user.getUnreadMsgCount() == 0)
 			user.setUnreadMsgCount(user.getUnreadMsgCount() + 1);
 	}
@@ -830,7 +833,7 @@ View.OnClickListener {
 	 */
 	private void showConflictDialog() {
 		isConflictDialogShow = true;
-		DemoApplication.getInstance().logout(null);
+		MyApplication.getInstance().logout(null);
 
 		if (!MainActivity.this.isFinishing()) {
 			// clear up global variables

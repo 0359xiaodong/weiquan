@@ -73,6 +73,8 @@ public abstract class HXSDKHelper {
      */
     protected String password = null;
     
+    protected String userJson = null;
+    
     /**
      * init flag: test if the sdk has been inited before, we don't need to init again
      */
@@ -196,6 +198,20 @@ public abstract class HXSDKHelper {
         }
     }
     
+    public void setUserJson(String userJson){
+        if (userJson != null) {
+            if(hxModel.saveUseJSON(userJson)){
+            }
+        }
+    }
+    
+    public String getUserJson(){
+    
+        if(userJson == null){
+            userJson = hxModel.getUserJson();
+        }
+        return userJson;    
+    }
     /**
      * the subclass must override this class to provide its own model or directly use {@link DefaultHXSDKModel}
      * @return

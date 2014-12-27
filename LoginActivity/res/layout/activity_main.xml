@@ -30,7 +30,7 @@
                 android:paddingBottom="2dip"
                 android:paddingTop="7dip"
                 android:scaleType="matrix"
-                android:text="New"
+                android:text="News"
                 android:textColor="@color/main_botton_text_color"
                 android:textSize="12sp" />
 

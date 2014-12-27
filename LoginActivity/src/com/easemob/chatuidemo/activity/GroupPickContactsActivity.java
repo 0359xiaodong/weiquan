@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.entity.User;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,10 +36,9 @@ import android.widget.ListView;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoApplication;
+import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
-import com.easemob.chatuidemo.domain.User;
 import com.easemob.chatuidemo.widget.Sidebar;
 
 public class GroupPickContactsActivity extends BaseActivity {
@@ -68,7 +69,7 @@ public class GroupPickContactsActivity extends BaseActivity {
 			exitingMembers = new ArrayList<String>();
 		// 获取好友列表
 		final List<User> alluserList = new ArrayList<User>();
-		for (User user : DemoApplication.getInstance().getContactList().values()) {
+		for (User user : MyApplication.getInstance().getContactList().values()) {
 			if (!user.getUsername().equals(Constant.NEW_FRIENDS_USERNAME) & !user.getUsername().equals(Constant.GROUP_USERNAME))
 				alluserList.add(user);
 		}
