@@ -13,6 +13,7 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.config.MyApplication;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -28,8 +29,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.chat.EMContactManager;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
+
+import copy.util.NameUrlUtils;
+import copy.util.StringRunnable;
 
 public class AddContactActivity extends BaseActivity{
 	private EditText editText;
@@ -75,7 +78,12 @@ public class AddContactActivity extends BaseActivity{
 			//服务器存在此用户，显示此用户和添加按钮
 			searchedUserLayout.setVisibility(View.VISIBLE);
 			nameText.setText(toAddUsername);
-			
+            NameUrlUtils.setNickName(toAddUsername, new StringRunnable() {
+                @Override
+                public void run(String str) {
+                    nameText.setText(str);
+                }
+            });
 		} 
 	}	
 	

@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +13,10 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.DemoHXSDKHelper;
 import com.easemob.chatuidemo.R;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.Animator.AnimatorListener;
 
 /**
  * 开屏页
@@ -20,8 +25,11 @@ import com.easemob.chatuidemo.R;
 public class SplashActivity extends BaseActivity {
 	private LinearLayout rootLayout;
 	private TextView versionText;
-	
-	private static final int sleepTime = 2500;
+	   /** 动画 */
+    private ObjectAnimator animator;
+    private View view;
+    private TextView textView;
+	private static final int sleepTime = 2000;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -30,14 +38,60 @@ public class SplashActivity extends BaseActivity {
 
 		rootLayout = (LinearLayout) findViewById(R.id.splash_root);
 		versionText = (TextView) findViewById(R.id.tv_version);
-
+		view=(View)findViewById(R.id.view);
+        textView=(TextView)findViewById(R.id.tvTitle);
 		versionText.setText(getVersion());
-		AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
+		AlphaAnimation animation = new AlphaAnimation(0.8f, 1.0f);
 		animation.setDuration(2000);
 		rootLayout.startAnimation(animation);
 	}
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        // TODO Auto-generated method stub
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            startAnimation();
+        }
+    }
 
-	@Override
+	private void startAnimation() {
+        // TODO Auto-generated method stub
+	    AnimatorSet set = new AnimatorSet() ;
+        ObjectAnimator anim = ObjectAnimator.ofFloat(view, "alpha", 1f, 0.8f);
+        anim.setDuration(20);
+        anim.start();
+        animator = ObjectAnimator.ofFloat(view, "x", textView.getLeft(), textView.getRight());
+        animator.addListener(new AnimatorListener() {
+            
+            @Override
+            public void onAnimationStart(Animator animation) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+        animator.setDuration(1800);
+        animator.start();
+    }
+
+    @Override
 	protected void onStart() {
 		super.onStart();
 

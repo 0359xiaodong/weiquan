@@ -13,6 +13,7 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.config.MyApplication;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,7 +23,6 @@ import android.widget.Toast;
 
 import com.easemob.EMError;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.exceptions.EaseMobException;
 

@@ -1,8 +1,8 @@
 package itstudio.instructor.fragment;
 
+import itstudio.instructor.config.MyApplication;
 import itstudio.instructor.util.FileUtils;
 
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.LoginActivity;
 import android.content.Intent;
@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class FragmentSetting extends Fragment {
+public class SettingFragment extends Fragment {
 
     private View rootView ;
     private ImageView headImg;
@@ -53,7 +53,7 @@ public class FragmentSetting extends Fragment {
             
             switch (view.getId()) {
             case R.id.rl_login:
-                if(MyApplication.user==null)
+               // if(MyApplication.user==null)
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.rl_setting:
@@ -65,11 +65,12 @@ public class FragmentSetting extends Fragment {
             }
         }
     };
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onResume() {
+        super.onResume();
         if(MyApplication.user!=null){
             nameTv.setText(MyApplication.user.getName());
             FileUtils.setImageHead(MyApplication.user.getHeadUrl(), headImg);
-        }
-        
+        }  
     };
+
 }

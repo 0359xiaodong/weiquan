@@ -2,6 +2,7 @@ package itstudio.instructor.ui;
 
 import itstudio.instructor.adapter.CommentAdapter;
 import itstudio.instructor.config.Config;
+import itstudio.instructor.config.MyApplication;
 import itstudio.instructor.entity.Comment;
 import itstudio.instructor.entity.News;
 import itstudio.instructor.http.TwitterRestClient;
@@ -33,7 +34,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

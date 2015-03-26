@@ -1,10 +1,6 @@
 package itstudio.instructor.entity;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import android.graphics.Bitmap;
 
 /**
  * News entity. @author MyEclipse Persistence Tools

@@ -49,6 +49,7 @@ public class InviteMessgeDao {
 	 */
 	public synchronized Integer saveMessage(InviteMessage message){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		
 		int id = -1;
 		if(db.isOpen()){
 			ContentValues values = new ContentValues();
@@ -59,7 +60,7 @@ public class InviteMessgeDao {
 			values.put(COLUMN_NAME_TIME, message.getTime());
 			values.put(COLUMN_NAME_STATUS, message.getStatus().ordinal());
 			db.insert(TABLE_NAME, null, values);
-			
+			System.out.println("inset--------"+message.getFrom());
 			Cursor cursor = db.rawQuery("select last_insert_rowid() from " + TABLE_NAME,null); 
             if(cursor.moveToFirst()){
                 id = cursor.getInt(0);
@@ -130,6 +131,7 @@ public class InviteMessgeDao {
 	public void deleteMessage(String from){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		if(db.isOpen()){
+		    System.err.println("delete");
 			db.delete(TABLE_NAME, COLUMN_NAME_FROM + " = ?", new String[]{from});
 		}
 	}

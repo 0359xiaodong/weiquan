@@ -2,7 +2,7 @@
     android:id="@+id/splash_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/splash_gradient"
+    android:background="#2c92f0"
     android:gravity="center"
     android:orientation="vertical" >
 
@@ -14,21 +14,29 @@
         android:src="@drawable/logo_uidemo" >
     </ImageView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
-        android:gravity="bottom"
-        android:shadowColor="#FFFFFF"
-        android:shadowDx="0"
-        android:shadowDy="2"
-        android:shadowRadius="1"
-        android:text="IEC微圈"
-        android:textColor="#444444"
-        android:textSize="35dip"
-        android:typeface="serif" >
-    </TextView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="19dp"
+            android:text="IEC微圈"
+            android:textColor="@color/white"
+            android:textSize="@dimen/xxlarge_text_size" />
+        <!-- 动画效果使用 -->
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/tvTitle"
+            android:background="#2c92f0" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tv_version"
@@ -36,12 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dip"
         android:gravity="bottom"
-        android:shadowColor="#FFFFFF"
-        android:shadowDx="0"
-        android:shadowDy="2"
-        android:shadowRadius="1"
-        android:textColor="#444444"
-        android:textSize="20dip"
+        android:textColor="@color/white"
+        android:textSize="@dimen/xxlarge_text_size"
         android:typeface="serif" >
     </TextView>
 

@@ -63,7 +63,7 @@ public class ChildViewPager extends ViewPager {
                 if (x > 0 && getCurrentItem() == 0) {// 第一页向左移动
                     getParent().requestDisallowInterceptTouchEvent(true);
                 } else if (x < 0 && getCurrentItem() == count) {// 
-                    getParent().requestDisallowInterceptTouchEvent(true);
+                    getParent().requestDisallowInterceptTouchEvent(false);
                 } else {
                     getParent().requestDisallowInterceptTouchEvent(true);
                 }

@@ -13,15 +13,14 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.config.MyApplication;
+
 import java.util.List;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.NewFriendsMsgAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;

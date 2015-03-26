@@ -19,6 +19,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.easemob.applib.controller.HXSDKHelper;
 
+/**
+ * 这个DbOpenHelper 不是公用的 换了账号就要变的
+ *
+ */
 public class DbOpenHelper extends SQLiteOpenHelper{
 
 	private static final int DATABASE_VERSION = 1;
@@ -28,8 +32,8 @@ public class DbOpenHelper extends SQLiteOpenHelper{
 			+ UserDao.TABLE_NAME + " ("
 			+ UserDao.COLUMN_NAME_NICK +" TEXT, "
 			+ UserDao.COLUMN_NAME +" TEXT, "
-			+ UserDao.COLUMNJSON+" TEXT, "
-			+ UserDao.COLUMN_NAME_ID + " TEXT PRIMARY KEY);";
+			+ UserDao.COLUMN_HEADURL+" TEXT, "
+			+ UserDao.COLUMN_ID + " TEXT PRIMARY KEY);";
 	
 	private static final String INIVTE_MESSAGE_TABLE_CREATE = "CREATE TABLE "
 			+ InviteMessgeDao.TABLE_NAME + " ("
@@ -41,11 +45,18 @@ public class DbOpenHelper extends SQLiteOpenHelper{
 			+ InviteMessgeDao.COLUMN_NAME_STATUS + " INTEGER, "
 			+ InviteMessgeDao.COLUMN_NAME_ISINVITEFROMME + " INTEGER, "
 			+ InviteMessgeDao.COLUMN_NAME_TIME + " TEXT); ";
+	
+	private static final String NAME_URL = "CREATE TABLE "
+	        + NameUrlDao.TABLE_NAME + " ("
+	        + NameUrlDao.COLUMN_ID + " TEXT PRIMARY KEY , "
+	        + NameUrlDao.COLUMN_NAME + " TEXT, "
+	        + NameUrlDao.COLUMN_HEAD_URL + " TEXT); ";
 			
 			
 	
 	private DbOpenHelper(Context context) {
 		super(context, getUserDatabaseName(), null, DATABASE_VERSION);
+		
 	}
 	
 	public static DbOpenHelper getInstance(Context context) {
@@ -54,14 +65,19 @@ public class DbOpenHelper extends SQLiteOpenHelper{
 		}
 		return instance;
 	}
-	
+
+    public  static void reset() {
+        instance = null;
+    }
 	private static String getUserDatabaseName() {
+	    
         return  HXSDKHelper.getInstance().getHXId() + "_demo.db";
     }
 	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(USERNAME_TABLE_CREATE);
+		db.execSQL(NAME_URL);
 		db.execSQL(INIVTE_MESSAGE_TABLE_CREATE);
 		
 	}

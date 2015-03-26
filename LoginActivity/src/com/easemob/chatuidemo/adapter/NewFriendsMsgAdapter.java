@@ -40,6 +40,9 @@ import com.easemob.chatuidemo.domain.InviteMessage;
 import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
 import com.easemob.exceptions.EaseMobException;
 
+import copy.util.NameUrlUtils;
+import copy.util.StringRunnable;
+
 public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
 	private Context context;
@@ -80,6 +83,13 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			
 			holder.reason.setText(msg.getReason());
 			holder.name.setText(msg.getFrom());
+			
+            NameUrlUtils.setNickName(msg.getFrom(), new StringRunnable() {
+                @Override
+                public void run(String str) {
+                    holder.name.setText(str);
+                }
+            });
 			// holder.time.setText(DateUtils.getTimestampString(new
 			// Date(msg.getTime())));
 			if (msg.getStatus() == InviteMesageStatus.BEAGREED) {

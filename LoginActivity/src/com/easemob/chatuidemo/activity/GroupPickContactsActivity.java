@@ -13,6 +13,7 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.config.MyApplication;
 import itstudio.instructor.entity.User;
 
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import android.widget.ListView;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
 import com.easemob.chatuidemo.widget.Sidebar;

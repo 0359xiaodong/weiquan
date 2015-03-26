@@ -2,15 +2,12 @@ package itstudio.instructor.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import itstudio.instructor.config.Config;
 import itstudio.instructor.entity.News;
+import itstudio.instructor.util.FileUtils;
 import itstudio.instructor.util.TimeUtil;
 import itstudio.instructor.widget.RoundedImageView;
-
 import com.easemob.chatuidemo.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,21 +17,14 @@ import android.widget.TextView;
 
 public class NewsListAdapter extends BaseAdapter {
 
-	private Context context;
 	private LayoutInflater mInflater;
-	DisplayImageOptions options;
-	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private List<News> newsList =new ArrayList<News>();
-	private News news ;
-	
 
-	public NewsListAdapter(Context context, List<News> newsList,DisplayImageOptions options) {
+	public NewsListAdapter(Context context, List<News> newsList) {
 		if(newsList!=null){
 			this.newsList = newsList;
 		}
-		this.context = context;
 		this.mInflater = LayoutInflater.from(context);
-		this.options = options;
 		
 	}
 
@@ -87,6 +77,10 @@ public class NewsListAdapter extends BaseAdapter {
 		}
 		
 	}
+	public void clearAll() {
+	    newsList.clear();
+	    notifyDataSetChanged();
+	}
 	
 	public int appendData(List<News> addList,boolean refesh) {
 		int result =0;
@@ -105,7 +99,6 @@ public class NewsListAdapter extends BaseAdapter {
 		}
 		// 有新的数据
 		if(!newsList.get(0).getId().equals(addList.get(0).getId())){
-			
 			if(refesh){
 				newsList.clear();  //  先清空
 				newsList.addAll(addList);//在加载新的
@@ -133,7 +126,7 @@ public class NewsListAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		final PicModelHodler holder ;
-		news = newsList.get(position);
+		News news = newsList.get(position);
 		
 		if(convertView == null){
 			holder = new PicModelHodler();
@@ -153,9 +146,7 @@ public class NewsListAdapter extends BaseAdapter {
 		holder.txt_title.setText(news.getTitle());
 		holder.txt_short_content.setText(news.getContent());
 		holder.txt_date.setText(TimeUtil.dateToString(news.getPostTime(),TimeUtil.FORMAT_DATE));
-		
-		imageLoader.displayImage(Config.HEAD_URL+news.getUser().getHeadUrl(),holder.imageView, options, new SimpleImageLoadingListener() {});
-		
+		FileUtils.setImageHead(news.getUser().getHeadUrl(), holder.imageView);
 		return convertView;
 	}
 

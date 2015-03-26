@@ -1,14 +1,16 @@
-package com.easemob.chatuidemo.activity;
+package itstudio.instructor.fragment;
+
+import itstudio.instructor.config.MyApplication;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,21 +29,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
-import android.widget.Filter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.activity.ChatActivity;
+import com.easemob.chatuidemo.activity.MainActivity;
 import com.easemob.chatuidemo.adapter.ChatAllHistoryAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 
@@ -49,7 +50,7 @@ import com.easemob.chatuidemo.db.InviteMessgeDao;
  * 显示所有会话记录，比较简单的实现，更好的可能是把陌生人存入本地，这样取到的聊天记录是可控的
  * 
  */
-public class ChatAllHistoryFragment extends Fragment {
+public class ChatHistoryFragment extends Fragment {
 
 	private InputMethodManager inputMethodManager;
 	private ListView listView;
@@ -64,101 +65,103 @@ public class ChatAllHistoryFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_conversation_history, container, false);
+		
+            View view = inflater.inflate(R.layout.fragment_conversation_history, container, false);
+          
+            inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            errorItem = (RelativeLayout) view.findViewById(R.id.rl_error_item);
+            errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);
+            
+            conversationList = loadConversationsWithRecentChat();
+            listView = (ListView) view.findViewById(R.id.list);
+            adapter = new ChatAllHistoryAdapter(getActivity(), 1, conversationList);
+            // 设置adapter
+            listView.setAdapter(adapter);
+                    
+            groups = EMGroupManager.getInstance().getAllGroups();
+
+            
+            listView.setOnItemClickListener(new OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    EMConversation conversation = adapter.getItem(position);
+                    String username = conversation.getUserName();
+                    if (username.equals(MyApplication.getInstance().getUserName()))
+                        Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
+                    else {
+                        // 进入聊天页面
+                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        EMContact emContact = null;
+                        groups = EMGroupManager.getInstance().getAllGroups();
+                        for (EMGroup group : groups) {
+                            if (group.getGroupId().equals(username)) {
+                                emContact = group;
+                                break;
+                            }
+                        }
+                        if (emContact != null && emContact instanceof EMGroup) {
+                            // it is group chat
+                            intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
+                            intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
+                        } else {
+                            // it is single chat
+                            intent.putExtra("userId", username);
+                            
+                        }
+                        // 加个机器人聊天
+                        startActivity(intent);
+                    }
+                }
+            });
+            // 注册上下文菜单
+            registerForContextMenu(listView);
+
+            listView.setOnTouchListener(new OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    // 隐藏软键盘
+                    hideSoftKeyboard();
+                    return false;
+                }
+
+            });
+            // 搜索框
+            query = (EditText) view.findViewById(R.id.query);
+            // 搜索框中清除button
+            clearSearch = (ImageButton) view.findViewById(R.id.search_clear);
+            query.addTextChangedListener(new TextWatcher() {
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    adapter.getFilter().filter(s);
+                    if (s.length() > 0) {
+                        clearSearch.setVisibility(View.VISIBLE);
+                    } else {
+                        clearSearch.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                public void afterTextChanged(Editable s) {
+                }
+            });
+            clearSearch.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    query.getText().clear();
+                    hideSoftKeyboard();
+                }
+            });
+        
+
+        return view ;
+    
 	}
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
-            return;
-		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		errorItem = (RelativeLayout) getView().findViewById(R.id.rl_error_item);
-		errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);
-		
-		conversationList = loadConversationsWithRecentChat();
-		listView = (ListView) getView().findViewById(R.id.list);
-		adapter = new ChatAllHistoryAdapter(getActivity(), 1, conversationList);
-		// 设置adapter
-		listView.setAdapter(adapter);
-				
-		groups = EMGroupManager.getInstance().getAllGroups();
 
-		
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				EMConversation conversation = adapter.getItem(position);
-				String username = conversation.getUserName();
-				if (username.equals(MyApplication.getInstance().getUserName()))
-					Toast.makeText(getActivity(), "不能和自己聊天", 0).show();
-				else {
-					// 进入聊天页面
-					Intent intent = new Intent(getActivity(), ChatActivity.class);
-					EMContact emContact = null;
-					groups = EMGroupManager.getInstance().getAllGroups();
-					for (EMGroup group : groups) {
-						if (group.getGroupId().equals(username)) {
-							emContact = group;
-							break;
-						}
-					}
-					if (emContact != null && emContact instanceof EMGroup) {
-						// it is group chat
-						intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-						intent.putExtra("groupId", ((EMGroup) emContact).getGroupId());
-					} else {
-						// it is single chat
-						intent.putExtra("userId", username);
-					}
-					startActivity(intent);
-				}
-			}
-		});
-		// 注册上下文菜单
-		registerForContextMenu(listView);
-
-		listView.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				// 隐藏软键盘
-				hideSoftKeyboard();
-				return false;
-			}
-
-		});
-		// 搜索框
-		query = (EditText) getView().findViewById(R.id.query);
-		// 搜索框中清除button
-		clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
-		query.addTextChangedListener(new TextWatcher() {
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-				adapter.getFilter().filter(s);
-				if (s.length() > 0) {
-					clearSearch.setVisibility(View.VISIBLE);
-				} else {
-					clearSearch.setVisibility(View.INVISIBLE);
-				}
-			}
-
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
-
-			public void afterTextChanged(Editable s) {
-			}
-		});
-		clearSearch.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				query.getText().clear();
-				hideSoftKeyboard();
-			}
-		});
-
-	}
 
 	void hideSoftKeyboard() {
 		if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
@@ -195,14 +198,33 @@ public class ChatAllHistoryFragment extends Fragment {
 	}
 
 	/**
-	 * 刷新页面
+	 * 刷新页面  有可能view 还没有找到
 	 */
 	public void refresh() {
-		conversationList.clear();
-		conversationList.addAll(loadConversationsWithRecentChat());
-		adapter.notifyDataSetChanged();
+		if(errorText==null){
+			 SystemClock.sleep(200);
+		}
+		if(errorText!=null){
+			conversationList.clear();
+			conversationList.addAll(loadConversationsWithRecentChat());
+			adapter.notifyDataSetChanged(); 
+		}
 	}
 
+	public void setNetWorkState(int state){
+		if (errorText == null) {
+			SystemClock.sleep(200);
+		}
+		if (errorText != null) {
+			if (state == 0)
+				errorItem.setVisibility(View.VISIBLE);
+			else if (state == 1)
+				errorText.setText("连接不到聊天服务器");
+			else
+				errorText.setText("当前网络不可用，请检查网络设置");
+		}
+	   
+	}
 	/**
 	 * 获取所有会话
 	 * 

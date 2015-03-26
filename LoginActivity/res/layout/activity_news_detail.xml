@@ -265,6 +265,7 @@
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/bt_commment"
             android:layout_weight="1"
+            android:textColor="@color/black"
             android:background="@drawable/edit_text_round_bg"
             android:hint="@string/want_comment"
             android:minHeight="40dp" >

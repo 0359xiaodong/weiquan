@@ -1,8 +1,10 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <style name="AppTheme" parent="android:Theme.Light" />
-
+    
+    <style name="AppTheme" parent="@android:style/Theme.Holo">
+        <!-- Customize your theme here. -->
+    </style>
 
     <style name="chat_content_date_style">
         <item name="android:minHeight">50dp</item>
@@ -193,5 +195,31 @@
      <style name="TranslucentTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>  
+    </style>
+        <style name="exception"></style>
+    <style name="exception.title">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginBottom">5dip</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="exception.message">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">0dip</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="exception.button">
+        <item name="android:layout_marginTop">25dip</item>
+    </style>
+        <style name="head_in_out" mce_bogus="1" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/head_in</item>
+        <item name="android:windowExitAnimation">@anim/head_out</item>
     </style>
 </resources>

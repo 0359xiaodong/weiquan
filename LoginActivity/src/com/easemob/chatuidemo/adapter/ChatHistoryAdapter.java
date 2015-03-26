@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.adapter;
 
+import itstudio.instructor.entity.User;
+
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,7 @@ import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.chatuidemo.utils.SmileUtils;
 import com.easemob.util.DateUtils;
@@ -43,11 +46,11 @@ import com.easemob.util.DateUtils;
  * 聊天记录adpater
  * 
  */
-public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
+public class ChatHistoryAdapter extends ArrayAdapter<User> {
 
 	private LayoutInflater inflater;
 
-	public ChatHistoryAdapter(Context context, int textViewResourceId, List<EMContact> objects) {
+	public ChatHistoryAdapter(Context context, int textViewResourceId, List<User> objects) {
 		super(context, textViewResourceId, objects);
 		inflater = LayoutInflater.from(context);
 	}
@@ -77,8 +80,8 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		}
 		
 		
-		EMContact user = getItem(position);
-		if(user instanceof EMGroup){
+		User user = getItem(position);
+		if(user.getId().length()>12){
 			//群聊消息，显示群聊头像
 			holder.avatar.setImageResource(R.drawable.group_icon);
 		}else{
@@ -88,7 +91,8 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 		String username = user.getUsername();
 		// 获取与此用户/群组的会话
 		EMConversation conversation = EMChatManager.getInstance().getConversation(username);
-		holder.name.setText(user.getNick() != null ? user.getNick() : username);
+		System.out.println(user.getName()+"xxxx");
+		holder.name.setText(user.getName() != null ? user.getNick() : username);
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
 			holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
@@ -110,7 +114,6 @@ public class ChatHistoryAdapter extends ArrayAdapter<EMContact> {
 				holder.msgState.setVisibility(View.GONE);
 			}
 		}
-
 		return convertView;
 	}
 

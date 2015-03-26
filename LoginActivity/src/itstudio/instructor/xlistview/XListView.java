@@ -9,6 +9,8 @@
 package itstudio.instructor.xlistview;
 
 
+import itstudio.instructor.util.PixelUtil;
+
 import com.easemob.chatuidemo.R;
 
 import android.content.Context;
@@ -156,7 +158,30 @@ public class XListView extends ListView implements OnScrollListener {
 		}
 		super.setAdapter(adapter);
 	}
-
+    /**
+     * Auto call back refresh.
+     */
+    public void autoRefresh() {
+        mHeaderViewHeight =PixelUtil.dp2px(60);
+        mHeaderView.setVisiableHeight(mHeaderViewHeight);
+       
+        if (mEnablePullRefresh && !mPullRefreshing) {
+            // update the arrow image not refreshing
+            if (mHeaderView.getVisiableHeight() > mHeaderViewHeight) {
+                mHeaderView.setState(XListViewHeader.STATE_READY);
+            } else {
+                mHeaderView.setState(XListViewHeader.STATE_NORMAL);
+            }
+        }
+        mPullRefreshing = true;
+        mHeaderView.setState(XListViewHeader.STATE_REFRESHING);
+        refresh();
+    }
+    private void refresh() {
+        if (mEnablePullRefresh && null != mListViewListener) {
+            mListViewListener.onRefresh();
+        }
+    }
 	/**
 	 * enable or disable pull down refresh feature.
 	 * 
@@ -199,6 +224,8 @@ public class XListView extends ListView implements OnScrollListener {
 	 * stop refresh, reset header view.
 	 */
 	public void stopRefresh() {
+
+
 		if (mPullRefreshing == true) {
 			mPullRefreshing = false;
 			resetHeaderHeight();
@@ -262,7 +289,6 @@ public class XListView extends ListView implements OnScrollListener {
 		int height = mHeaderView.getVisiableHeight();
 		if (height == 0) // not visible.
 			return;
-		// refreshing and header isn't shown fully. do nothing.
 		if (mPullRefreshing && height <= mHeaderViewHeight) {
 			return;
 		}

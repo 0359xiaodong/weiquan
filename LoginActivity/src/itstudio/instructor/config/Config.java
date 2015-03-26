@@ -12,7 +12,9 @@ import android.os.Environment;
 public class Config {
 	
 	// 所有接口的url
-	public static final String BASE_URL = "http://218.198.127.120:80/assistant/"; 
+	//public static final String BASE_URL = "http://218.198.127.120:80/assistant/"; 
+	public static final String BASE_URL = "http://192.168.1.101:8080/assistant/"; 
+	//public static final String BASE_URL = "http://202.196.1.165:80/assistant/"; 
 	//public static final String BASE_URL = "http://59.70.149.8:8080/assistant/"; 
 	public static final String BASE_URL_API = BASE_URL+"api/"; 
 	public static final String IMG_URL = BASE_URL+"img/"; 
@@ -52,6 +54,8 @@ public class Config {
 	public static final String  AC_UPDATE = "get_update";//更新app
 	public static final String  AC_OPINION = "opinion_feedback";//意见反馈
 	public static final String  AC_FINDPSW = "findpsw_forget.action";//找回密码
+	public static final String  AC_FINDFRIENDS = "find_friends.action";//找回密码
+	public static final String  AC_FINDUSER = "find_user.action";//找回密码
 	public static final String  LOGIN_KEY = "iec_wq2014";//找回密码
 	
 	public static final String apkUrl = BASE_URL+"file/"+"instructor.apk";

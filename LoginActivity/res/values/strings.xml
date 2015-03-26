@@ -206,4 +206,27 @@
     <string name="error_data_null">请仔细填写新密码和原始密码!</string>
     <string name="error_password_not_same">两次密码不一致!</string>
     <string name="exit_title">下次记得再回来</string>
+    
+        <string-array name="jazzy_effects">
+        <item>Standard</item>
+        <item>Tablet</item>
+        <item>CubeIn</item>
+        <item>CubeOut</item>
+        <item>FlipVertical</item>
+        <item>FlipHorizontal</item>
+        <item>Stack</item>
+        <item>ZoomIn</item>
+        <item>ZoomOut</item>
+        <item>RotateUp</item>
+        <item>RotateDown</item>
+        <item>Accordion</item>
+    </string-array>
+        <string name="tab_wechat">微信</string>
+    <string name="tab_addressbook">通讯录</string>
+    <string name="tab_moment">朋友圈</string>
+    <string name="tab_me">我</string>
+    
+        <string name="about_nature">Nature can bring a lot of beauty into our lives. Nature has a way of affecting our moods and it can force us to change our plans. Nature is responsible for the sun, clouds, rain, and snow. When it is sunny and bright outside, we feel cheerful inside. When it is cloudy and rainy, we often feel gloomy. When there is a beautiful and starry night, the moonlight makes us feel romantic. When we see the leaves budding on a tree or when a timid flower pushes through the frozen ground, or when we smell the freshness of spring, new hope will always come to us. Nature is truly an intrinsic part of our lives. When we wake and see a sunrise, when we walk and feel a breeze, when we gaze at the mountains and the splendor of the seas, when we see the earth renew its beauty at each season of the year, and when the stars shine at night, we should be so very thankful to the Lord for giving us all these wonderful and miraculous things. Learning to become more aware of nature can truly have a good effect on our lives in the way we look at things and in the way we feel about ourselves.</string>
+    <string name="empty_string">empty</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.activity;
+package itstudio.instructor.fragment;
 
+import itstudio.instructor.config.MyApplication;
 import itstudio.instructor.entity.User;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -45,12 +45,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.easemob.chat.EMContactManager;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.DemoHXSDKHelper;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.activity.AddContactActivity;
+import com.easemob.chatuidemo.activity.ChatActivity;
+import com.easemob.chatuidemo.activity.GroupsActivity;
+import com.easemob.chatuidemo.activity.MainActivity;
+import com.easemob.chatuidemo.activity.NewFriendsMsgActivity;
 import com.easemob.chatuidemo.adapter.ContactAdapter;
 import com.easemob.chatuidemo.db.InviteMessgeDao;
 import com.easemob.chatuidemo.db.UserDao;
@@ -72,26 +75,18 @@ public class ContactlistFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_contact_list, container, false);
-	}
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		//防止被T后，没点确定按钮然后按了home键，长期在后台又进app导致的crash
-		if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
-		    return;
+		View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		listView = (ListView) getView().findViewById(R.id.list);
-		sidebar = (Sidebar) getView().findViewById(R.id.sidebar);
+		listView = (ListView) view.findViewById(R.id.list);
+		sidebar = (Sidebar) view.findViewById(R.id.sidebar);
 		sidebar.setListView(listView);
-		//黑名单列表
+		// 黑名单列表
 		contactList = new ArrayList<User>();
 		// 获取设置contactlist
 		if (DemoHXSDKHelper.getInstance().isLogined()) {
-		    blackList = EMContactManager.getInstance().getBlackListUsernames();
-		    
-		    getContactList();
+			blackList = EMContactManager.getInstance().getBlackListUsernames();
+			getContactList();
 		}
 		// 设置adapter
 		adapter = new ContactAdapter(getActivity(), R.layout.row_contact, contactList, sidebar);
@@ -110,9 +105,10 @@ public class ContactlistFragment extends Fragment {
 					// 进入群聊列表页面
 					startActivity(new Intent(getActivity(), GroupsActivity.class));
 				} else {
-					// demo中直接进入聊天页面，实际一般是进入用户详情页
-					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()));
+					// demo中直接进入聊天页面
+					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getUsername()).putExtra("name", adapter.getItem(position).getName()));
 				}
+				// 还要添加机器人页面
 			}
 		});
 		listView.setOnTouchListener(new OnTouchListener() {
@@ -122,29 +118,36 @@ public class ContactlistFragment extends Fragment {
 				// 隐藏软键盘
 				if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
 					if (getActivity().getCurrentFocus() != null)
-						inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-								InputMethodManager.HIDE_NOT_ALWAYS);
+						inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 				}
 				return false;
 			}
 		});
 
-		ImageView addContactView = (ImageView) getView().findViewById(R.id.iv_new_contact);
+		ImageView addContactView = (ImageView) view.findViewById(R.id.iv_new_contact);
 		// 进入添加好友页
 		addContactView.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-			    if(DemoHXSDKHelper.getInstance().isLogined()){
-			        
-			        startActivity(new Intent(getActivity(), AddContactActivity.class));
-			    }else{
-			        Toast.makeText(getActivity(), "前先登陆", 0).show();
-			    }
+				if (DemoHXSDKHelper.getInstance().isLogined()) {
+
+					startActivity(new Intent(getActivity(), AddContactActivity.class));
+				} else {
+					Toast.makeText(getActivity(), "前先登陆", 0).show();
+				}
 			}
 		});
 		registerForContextMenu(listView);
+		return view;
+	}
 
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		//防止被T后，没点确定按钮然后按了home键，长期在后台又进app导致的crash
+		if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
+		    return;
 	}
 
 	@Override
@@ -269,15 +272,21 @@ public class ContactlistFragment extends Fragment {
 	// 刷新ui
 	public void refresh() {
 		try {
-			// 可能会在子线程中调到这方法
-			getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-				       blackList = EMContactManager.getInstance().getBlackListUsernames();
-					   getContactList();
-					   adapter.notifyDataSetChanged();
+			if (adapter == null) {
+				SystemClock.sleep(200);
+			}
+			if (adapter != null) {
+				// 可能会在子线程中调到这方法
+				getActivity().runOnUiThread(new Runnable() {
+					public void run() {
+						blackList = EMContactManager.getInstance().getBlackListUsernames();
+						getContactList();
+						adapter.notifyDataSetChanged();
 
-				}
-			});
+					}
+				});
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -289,19 +298,16 @@ public class ContactlistFragment extends Fragment {
 	private void getContactList() {
 		contactList.clear();
 		//获取本地好友列表
-		System.out.println("getContactList()aaa"+contactList.size());
 		Map<String, User> users = MyApplication.getInstance().getContactList();
 		Iterator<Entry<String, User>> iterator = users.entrySet().iterator();
-		System.out.println("getContactList()bbb"+contactList.size());
 		while (iterator.hasNext()) {
 			Entry<String, User> entry = iterator.next();
-			if (!entry.getKey().equals(Constant.NEW_FRIENDS_USERNAME) && !entry.getKey().equals(Constant.GROUP_USERNAME)
+			if (!Constant.NEW_FRIENDS_USERNAME.equals(entry.getKey()) && !Constant.GROUP_USERNAME.equals(entry.getKey())
 					&& !blackList.contains(entry.getKey())){
 			   
 			    contactList.add(entry.getValue());
 			}
 		}
-		System.out.println("getContactList()ccc"+contactList.size());
 		// 排序
 		Collections.sort(contactList, new Comparator<User>() {
 
@@ -311,11 +317,13 @@ public class ContactlistFragment extends Fragment {
 			}
 		});
 	
+		// 机器人添加到首位
+		
 		// 加入"申请与通知"和"群聊"
 		contactList.add(0, users.get(Constant.GROUP_USERNAME));
 		// 把"申请与通知"添加到首位
 		contactList.add(0, users.get(Constant.NEW_FRIENDS_USERNAME));
-		
+	
 	}
 	
 	@Override

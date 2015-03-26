@@ -14,6 +14,7 @@
 package com.easemob.chatuidemo.activity;
 
 import itstudio.instructor.config.Config;
+import itstudio.instructor.config.MyApplication;
 import itstudio.instructor.entity.User;
 import itstudio.instructor.http.TwitterRestClient;
 import java.util.ArrayList;
@@ -22,76 +23,51 @@ import java.util.List;
 import java.util.Map;
 import org.apache.http.Header;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.easemob.EMCallBack;
 import com.easemob.EMError;
+import com.easemob.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMContactManager;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
+import com.easemob.chatuidemo.db.DbOpenHelper;
 import com.easemob.chatuidemo.db.UserDao;
 import com.easemob.chatuidemo.utils.CommonUtils;
 import com.easemob.exceptions.EaseMobException;
-import com.easemob.util.EMLog;
 import com.easemob.util.HanziToPinyin;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.umeng.analytics.MobclickAgent;
+import copy.util.Tools;
 
 /**
  * 登陆页面 
  * 
  */
 public class LoginActivity extends BaseActivity {
+	
 	public static final int REQUEST_CODE_SETNICK = 1;
 	private EditText usernameEditText;
 	private EditText passwordEditText;
-
 	private String allPsw="nihaoiec";
-	private boolean progressShow;
 	private boolean autoLogin = false;
-
 	private boolean register = false;
 	private User user;
-	ProgressDialog pd;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		usernameEditText = (EditText) findViewById(R.id.username);
 		passwordEditText = (EditText) findViewById(R.id.password);
-
-		// 如果用户名改变，清空密码
-		usernameEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				passwordEditText.setText(null);
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-
-			}
-		});
-
+	
 	}
 	/*登陆的逻辑
 	 * 先到自己服务器登陆
@@ -102,7 +78,7 @@ public class LoginActivity extends BaseActivity {
 	 * */
 
 	/**
-	 * 环信登陆
+	 * 登陆
 	 * 
 	 * @param view
 	 */
@@ -111,309 +87,190 @@ public class LoginActivity extends BaseActivity {
 			Toast.makeText(this, R.string.network_isnot_available, Toast.LENGTH_SHORT).show();
 			return;
 		}
-		selfLogin();
+		final String username = usernameEditText.getText().toString();
+        final String password = passwordEditText.getText().toString();
+        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+        	loginServer(username,password);
+        }else{
+        	Toast.makeText(this, "用户名或密码不能为空", Toast.LENGTH_SHORT).show();
+        }
 	}
-
-	/*@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
-			if (requestCode == REQUEST_CODE_SETNICK) {
-				DemoApplication.currentUserNick = data.getStringExtra("edittext");
-
-				final String username = usernameEditText.getText().toString();
-				final String password = passwordEditText.getText().toString();
-
-				if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
-					progressShow = true;
-					final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
-					pd.setCanceledOnTouchOutside(false);
-					pd.setOnCancelListener(new OnCancelListener() {
-
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							progressShow = false;
-						}
-					});
-					pd.setMessage("正在登陆...");
-					pd.show();
-
-					final long start = System.currentTimeMillis();
-					// 调用sdk登陆方法登陆聊天服务器
-					EMChatManager.getInstance().login(username, password, new EMCallBack() {
-
-						@Override
-						public void onSuccess() {
-							//umeng自定义事件，开发者可以把这个删掉
-							loginSuccess2Umeng(start);
-							
-							if (!progressShow) {
-								return;
-							}
-							// 登陆成功，保存用户名密码
-							DemoApplication.getInstance().setUserName(username);
-							DemoApplication.getInstance().setPassword(password);
-							runOnUiThread(new Runnable() {
-								public void run() {
-									pd.setMessage("正在获取好友和群聊列表...");
-								}
-							});
-							try {
-								// ** 第一次登录或者之前logout后，加载所有本地群和回话
-								// ** manually load all local groups and
-								// conversations in case we are auto login
-								EMGroupManager.getInstance().loadAllGroups();
-								EMChatManager.getInstance().loadAllConversations();
-
-								// demo中简单的处理成每次登陆都去获取好友username，开发者自己根据情况而定
-								List<String> usernames = EMContactManager.getInstance().getContactUserNames();
-								EMLog.d("roster", "contacts size: " + usernames.size());
-								Map<String, User> userlist = new HashMap<String, User>();
-								for (String username : usernames) {
-									User user = new User();
-									user.setUsername(username);
-									setUserHearder(username, user);
-									userlist.put(username, user);
-								}
-								// 添加user"申请与通知"
-								User newFriends = new User();
-								newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
-								newFriends.setNick("申请与通知");
-								newFriends.setHeader("");
-								userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
-								// 添加"群聊"
-								User groupUser = new User();
-								groupUser.setUsername(Constant.GROUP_USERNAME);
-								groupUser.setNick("群聊");
-								groupUser.setHeader("");
-								userlist.put(Constant.GROUP_USERNAME, groupUser);
-
-								// 存入内存
-								DemoApplication.getInstance().setContactList(userlist);
-								// 存入db
-								UserDao dao = new UserDao(LoginActivity.this);
-								List<User> users = new ArrayList<User>(userlist.values());
-								dao.saveContactList(users);
-
-								// 获取群聊列表(群聊里只有groupid和groupname等简单信息，不包含members),sdk会把群组存入到内存和db中
-								EMGroupManager.getInstance().getGroupsFromServer();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							//更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
-							boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(DemoApplication.currentUserNick);
-							if (!updatenick) {
-								EMLog.e("LoginActivity", "update current user nick fail");
-							}
-
-							if (!LoginActivity.this.isFinishing())
-								pd.dismiss();
-							// 进入主页面
-							startActivity(new Intent(LoginActivity.this, MainActivity.class));
-							finish();
-						}
-
-						@Override
-						public void onProgress(int progress, String status) {
-
-						}
-
-						@Override
-						public void onError(final int code, final String message) {
-							loginFailure2Umeng(start,code,message);
-
-							if (!progressShow) {
-								return;
-							}
-							runOnUiThread(new Runnable() {
-								public void run() {
-									pd.dismiss();
-									Toast.makeText(getApplicationContext(), "登录失败: " + message, 0).show();
-									startActivity(new Intent(LoginActivity.this, MainActivity.class));
-		                            finish();
-								}
-							});
-						}
-					});
-
-				}
-
-			}
-
-		}
-	}*/
 	/**
 	 * 登陆自己的服务器
 	 */
-	private void selfLogin(){
-        final String username = usernameEditText.getText().toString();
-        final String password = passwordEditText.getText().toString();
 
-        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
-            pd = new ProgressDialog(LoginActivity.this);
-            pd.setCanceledOnTouchOutside(false);
-            pd.setMessage("正在登陆...");
-            pd.show();
-            loginServer(username,password);
-        }
-	}
 	
 	
-    public void loginServer(final String username,final String password) {
-        // TODO Auto-generated method stub}
-        System.out.println("登陆自己的服务器");
-        TwitterRestClient.keepCookie();
-        RequestParams params = new RequestParams();
-        params.put("key", Config.LOGIN_KEY);
-        params.put("id", username);
-        params.put("password", password);
-        TwitterRestClient.post(Config.AC_USER_LOGIN, params,
-                new AsyncHttpResponseHandler() {
+	public void loginServer(final String username, final String password) {
+		Tools.showDialog(this);
+		Tools.log("login sellf server");
+		TwitterRestClient.keepCookie();
+		RequestParams params = new RequestParams();
+		params.put("key", Config.LOGIN_KEY);
+		params.put("id", username);
+		params.put("password", password);
+		TwitterRestClient.post(Config.AC_USER_LOGIN, params, new AsyncHttpResponseHandler() {
 
-                    @Override
-                    public void onFailure(int arg0, Header[] arg1, byte[] arg2,
-                            Throwable arg3) {
-                        // TODO Auto-generated method stub
-                        // ToastUtil.showErrorMsg(LoginActivity.this,
-                        // R.string.error_account_pasword);
-                        // loginBtn.setText(R.string.login);
-                        Toast.makeText(getApplicationContext(), "登陆失败",200).show();
-                        pd.dismiss();
-                    }
+			@Override
+			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
+				Toast.makeText(getApplicationContext(), "服务器故障请稍后重试", 200).show();
+				Tools.dismissWaitDialog();
+			}
 
-                    @Override
-                    public void onSuccess(int arg0, Header[] arg1, byte[] data) {
-                        // 加载成功
-                        Gson gson = new Gson();
-                        String response = new String(data);
-                        // 失败返回 "fail" 长度为7
-                        System.out.println(response);
-                        
-                        if (response != null && response.length() > 8) {
-                            user = gson.fromJson(response,new TypeToken<User>() {}.getType());
-                            MyApplication.user = user;
-                            MyApplication.getInstance().setUserJson(response);
-                            hxLogin(username, password);
-                        } else {
-                            pd.dismiss();
-                            // ToastUtil.showErrorMsg(LoginActivity.this,
-                            // R.string.error_account_pasword);
-                            // loginBtn.setText(R.string.login);
-                        }
-                    }
-                });
-
-    }
-	// 环信登陆的方法
-	private void hxLogin(final String username,final String password){
-	    
-	        System.out.println("登陆环信");
-	        MyApplication.currentUserNick = usernameEditText.getText().toString()+"abc";
-	        // 调用sdk登陆方法登陆聊天服务器
-	        EMChatManager.getInstance().login(username, allPsw, new EMCallBack() {
-	            
-	            @Override
-	            public void onSuccess() {
-	          
+			@Override
+			public void onSuccess(int arg0, Header[] arg1, byte[] data) {
+				// 加载成功
+				Gson gson = new Gson();
+				String response = new String(data);
+				// 失败返回 "fail" 长度为7
+				if (response != null && response.length() > 8) {
+					user = gson.fromJson(response, new TypeToken<User>() {}.getType());
+					MyApplication.user = user;
+					MyApplication.getInstance().setUserJson(response);
 	                // 登陆成功，保存用户名密码
 	                MyApplication.getInstance().setUserName(username);
 	                MyApplication.getInstance().setPassword(password);
-	                runOnUiThread(new Runnable() {
-	                    public void run() {
-	                    }
-	                });
-	                try {
-	                    // ** 第一次登录或者之前logout后，加载所有本地群和回话
-	                    // ** manually load all local groups and
-	                    // conversations in case we are auto login
-	                    EMGroupManager.getInstance().loadAllGroups();
-	                    EMChatManager.getInstance().loadAllConversations();
-	                    
-	                    // demo中简单的处理成每次登陆都去获取好友username，开发者自己根据情况而定
-	                    List<String> usernames = EMContactManager.getInstance().getContactUserNames();
-	                    EMLog.d("roster", "contacts size: " + usernames.size());
-	                    Map<String, User> userlist = new HashMap<String, User>();
-	                    for (String username : usernames) {
-	                        User user = new User();
-	                        user.setUsername(username);
-	                        setUserHearder(username, user);
-	                        userlist.put(username, user);
-	                    }
-	                    // 添加user"申请与通知"
-	                    User newFriends = new User();
-	                    newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
-	                    newFriends.setNick("申请与通知");
-	                    newFriends.setHeader("");
-	                    userlist.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
-	                    // 添加"群聊"
-	                    User groupUser = new User();
-	                    groupUser.setUsername(Constant.GROUP_USERNAME);
-	                    groupUser.setNick("群聊");
-	                    groupUser.setHeader("");
-	                    userlist.put(Constant.GROUP_USERNAME, groupUser);
-	                    
-	                    // 存入内存
-	                    MyApplication.getInstance().setContactList(userlist);
-	                    // 存入db
-	                    UserDao dao = new UserDao(LoginActivity.this);
-	                    List<User> users = new ArrayList<User>(userlist.values());
-	                    dao.saveContactList(users);
-	                    
-	                    // 获取群聊列表(群聊里只有groupid和groupname等简单信息，不包含members),sdk会把群组存入到内存和db中
-	                    EMGroupManager.getInstance().getGroupsFromServer();
-	                    pd.dismiss();
-	                   // System.out.println("username"+MyApplication.user.getName());
-                        finish();
-	                } catch (Exception e) {
-	                    e.printStackTrace();
-	                    System.out.println("有异常"+e);
-	                    pd.dismiss();
-	                   // finish();
-	                }
-	                //更新当前用户的nickname 此方法的作用是在ios离线推送时能够显示用户nick
-	                boolean updatenick = EMChatManager.getInstance().updateCurrentUserNick(MyApplication.currentUserNick);
-	                if (!updatenick) {
-	                    EMLog.e("LoginActivity", "update current user nick fail");
-	                }
-	            }
-	            
-	            @Override
-	            public void onProgress(int progress, String status) {
-	                
-	            }
-	            
-	            @Override
-	            public void onError(final int code, final String message) {
-	               
-	                //以前没有注册成功  这次去注册吧
-	                if(code==-1005 && register==false){
-	                    System.out.println("该用户没有注册环信");
-	                    register(username, allPsw);
-	                }
-	                // 注册过一次还是没成功放弃吧
-	                if( register ==true){
-	                    runOnUiThread(new Runnable() {
-	                        public void run() {
-	                            // startActivity(new Intent(LoginActivity.this, MainActivity.class));
-	                            pd.dismiss();
-	                           // finish();
-	                        }
-	                    });
-	                }
-	                
-	            }
-	        });
-	        
-	    }
+					hxLogin(username, password);
+				} else {
+					Tools.dismissWaitDialog();
+					Tools.showToast(R.string.error_account_pasword);
+					// ToastUtil.showErrorMsg(LoginActivity.this,
+					// R.string.error_account_pasword);
+					// loginBtn.setText(R.string.login);
+				}
+			}
+		});
+
+	}
+
+	// 环信登陆的方法
+	private void hxLogin(final String username, final String password) {
+
+		Tools.log("login huanxin server");
+		MyApplication.currentUserNick = usernameEditText.getText().toString() + "abc";
+		// 调用sdk登陆方法登陆聊天服务器
+		EMChatManager.getInstance().login(username, allPsw, new EMCallBack() {
+
+			@Override
+			public void onSuccess() {
+				HXSDKHelper.getInstance().setHXId(username);
+				DbOpenHelper.reset();// 有可能更换账号 必须重置！
+				DbOpenHelper.getInstance(LoginActivity.this);
+				runOnUiThread(new Runnable() {
+					public void run() {
+						getFriends();
+					}
+				});
+			}
+
+			@Override
+			public void onProgress(int progress, String status) {
+
+			}
+
+			@Override
+			public void onError(final int code, final String message) {
+				// 以前没有注册成功 这次去注册吧
+				if (code == -1005 && register == false) {
+					Tools.log("this user has not register");
+					register(username, allPsw);
+				}
+				// 注册过一次还是没成功放弃吧
+				if (register == true) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							Tools.dismissWaitDialog();
+							finish();
+						}
+					});
+				}
+
+			}
+		});
+
+	}
 	    
 	
+	// 获取好友
+    private void getFriends() {
+    	
+		final Map<String, User> userMap = new HashMap<String, User>();
+		User newFriends = new User();
+		newFriends.setUsername(Constant.NEW_FRIENDS_USERNAME);
+		newFriends.setNick("申请与通知");
+		newFriends.setHeader("");
+		userMap.put(Constant.NEW_FRIENDS_USERNAME, newFriends);
+		// 添加"群聊"
+		User groupUser = new User();
+		groupUser.setUsername(Constant.GROUP_USERNAME);
+		groupUser.setNick("群聊");
+		groupUser.setHeader("");
+		userMap.put(Constant.GROUP_USERNAME, groupUser);
+		// 添加聊天机器人
+    	Tools.log("get friends");
+		EMGroupManager.getInstance().loadAllGroups();
+		EMChatManager.getInstance().loadAllConversations();
+		RequestParams params = new RequestParams();
+		params.put("id", MyApplication.user.getId());
+		TwitterRestClient.post(Config.AC_FINDFRIENDS, params, new AsyncHttpResponseHandler() {
+
+			@Override
+			public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
+
+				Tools.log("get friends fail");
+				// 存入内存
+				MyApplication.getInstance().setContactList(userMap);
+				// 存入db
+				UserDao dao = new UserDao(LoginActivity.this);
+				List<User> userList = new ArrayList<User>(userMap.values());
+				dao.saveContactList(userList);
+				Tools.dismissWaitDialog();
+				finish();
+			}
+
+			@Override
+			public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+				// 加载成功
+				List<User> userList = new ArrayList<User>(userMap.values());
+				Gson gson = new GsonBuilder().create();
+				if (!"error".equals(new String(arg2)) && !"none".equals(new String(arg2))) {
+					List<User> users = gson.fromJson(new String(arg2), new TypeToken<List<User>>() {}.getType());
+					userList.addAll(users);
+					for (User user : users) {
+						user.setUsername(user.getId());
+						setUserHearder(user.getId(), user);
+						user.setName(user.getName());
+						userMap.put(user.getId(), user);
+					}
+
+				}
+				// 存入内存
+				MyApplication.getInstance().setContactList(userMap);
+				// 存入db
+				UserDao dao = new UserDao(LoginActivity.this);
+				dao.saveContactList(userList);
+				// 获取群聊列表(群聊里只有groupid和groupname等简单信息，不包含members),sdk会把群组存入到内存和db中
+				try {
+					EMGroupManager.getInstance().getGroupsFromServer();
+				} catch (EaseMobException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					e.printStackTrace();
+					Tools.dismissWaitDialog();
+					finish();
+				}
+				Tools.dismissWaitDialog();
+				finish();
+			}
+		});
+    }
 	   /**
      * 注册
      * 
      * @param view
      */
     public void register(final String username,final String pwd) {
-        System.out.println("注册环信");
+        Tools.log("register hx");
         register = true;//避免死循环
         if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd)) {
             new Thread(new Runnable() {
@@ -424,10 +281,8 @@ public class LoginActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 if (!LoginActivity.this.isFinishing())
-                                   
                                 // 保存用户名
                                 MyApplication.getInstance().setUserName(username);
-                                //Toast.makeText(getApplicationContext(), "注册成功", 0).show();
                                 hxLogin(username,pwd);
                             }
                         });
@@ -444,8 +299,8 @@ public class LoginActivity extends BaseActivity {
                                 }else{
                                    // Toast.makeText(getApplicationContext(), "注册失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-                                pd.dismiss();
-                               // finish();
+                                Tools.dismissWaitDialog();
+                                finish();
                             }
                         });
                     }
@@ -501,29 +356,4 @@ public class LoginActivity extends BaseActivity {
 		}
 	}
 	
-	private void loginSuccess2Umeng(final long start) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				long costTime = System.currentTimeMillis() - start;
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("status", "success");
-				MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
-				MobclickAgent.onEventDuration(LoginActivity.this, "login1", (int) costTime);
-			}
-		});
-	}
-	private void loginFailure2Umeng(final long start, final int code, final String message) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				long costTime = System.currentTimeMillis() - start;
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("status", "failure");
-				params.put("error_code", code + "");
-				params.put("error_description", message);
-				MobclickAgent.onEventValue(LoginActivity.this, "login1", params, (int) costTime);
-				MobclickAgent.onEventDuration(LoginActivity.this, "login1", (int) costTime);
-				
-			}
-		});
-	}
 }

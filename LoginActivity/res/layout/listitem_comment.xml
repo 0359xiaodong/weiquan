@@ -62,6 +62,7 @@
                 android:layout_height="20dp"
                 android:text="@string/replay"
                 android:singleLine="true"
+                android:textColor="@color/black"
                 android:textSize="@dimen/small_text_size" />
         </LinearLayout>
 	</RelativeLayout>

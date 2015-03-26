@@ -15,6 +15,7 @@ package com.easemob.chatuidemo.adapter;
 
 import itstudio.instructor.config.Config;
 import itstudio.instructor.config.ImageOptionsUtil;
+import itstudio.instructor.config.MyApplication;
 
 import java.io.File;
 import java.util.Date;
@@ -60,7 +61,6 @@ import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
 import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.activity.AlertDialog;
 import com.easemob.chatuidemo.activity.BaiduMapActivity;
@@ -84,6 +84,9 @@ import com.easemob.util.TextFormater;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.umeng.analytics.MobclickAgent;
+
+import copy.util.NameUrlUtils;
+import copy.util.StringRunnable;
 
 public class MessageAdapter extends BaseAdapter{
 
@@ -314,21 +317,25 @@ public class MessageAdapter extends BaseAdapter{
 
 		// 群聊时，显示接收的消息的发送人的名称
 		if (chatType == ChatType.GroupChat && message.direct == EMMessage.Direct.RECEIVE){
-		    
 		    // demo用username代替nick
 		    holder.tv_userId.setText(message.getFrom());
-		   // holder.iv.
-		    // 用名字代替
+            NameUrlUtils.setNickName(message.getFrom(), new StringRunnable() {
+                @Override
+                public void run(String str) {
+                    holder.tv_userId.setText(str);
+                }
+            });
 		}
-		// 显示头像
-		 //holder.iv.
-		System.out.println(MyApplication.user==null);
-		System.out.println(MyApplication.getInstance().getUserName());
-		System.out.println(MyApplication.getInstance().getPassword());
-		if(MyApplication.user!=null){
-		    System.out.println("shehzitouxiang"+MyApplication.user.getHeadUrl());
-		    ImageLoader.getInstance().displayImage(Config.HEAD_URL+MyApplication.user.getHeadUrl(),holder.iv, ImageOptionsUtil.headImageOptions());
+		
+		// 谁发的显示头像
+		if(message.direct == EMMessage.Direct.RECEIVE){
+		    holder.head_iv.setImageResource(R.drawable.actionbar_camera_icon);
+            NameUrlUtils.setNickNameAndHead(holder.tv_userId, holder.head_iv, message.getFrom());
 		}
+	       // 自己头像
+		else {
+            itstudio.instructor.util.FileUtils.setImageHead(MyApplication.user.getHeadUrl(), holder.head_iv);
+        }
 		// 如果是发送的消息并且不是群聊消息，显示已读textview
 		if (message.direct == EMMessage.Direct.SEND && chatType != ChatType.GroupChat) {
 			holder.tv_ack = (TextView) convertView.findViewById(R.id.tv_ack);

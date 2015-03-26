@@ -29,12 +29,14 @@ import com.easemob.chatuidemo.Constant;
 import com.easemob.chatuidemo.utils.AESCipher;
 import com.easemob.util.HanziToPinyin;
 
+import copy.util.NameUrl;
+
 public class UserDao {
 	public static final String TABLE_NAME = "uers";
-	public static final String COLUMN_NAME_ID = "id";
-	public static final String COLUMN_NAME = "username";
+	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_NAME_NICK = "nick";
-	public static final String COLUMNJSON = "userJson";
+	public static final String COLUMN_HEADURL = "headUrl";
 	public static final String COLUMN_NAME_IS_STRANGER = "is_stranger";
 
 	private DbOpenHelper dbHelper;
@@ -54,7 +56,13 @@ public class UserDao {
 			db.delete(TABLE_NAME, null, null);
 			for (User user : contactList) {
 				ContentValues values = new ContentValues();
-				values.put(COLUMN_NAME_ID, user.getUsername());
+				if(user.getUsername()!=null){
+				    values.put(COLUMN_ID, user.getUsername());
+				}else{
+				    values.put(COLUMN_ID, user.getId());
+				}
+		        values.put(COLUMN_NAME, user.getName());
+				values.put(COLUMN_HEADURL, user.getHeadUrl());
 				if(user.getNick() != null)
 					values.put(COLUMN_NAME_NICK, user.getNick());
 				db.replace(TABLE_NAME, null, values);
@@ -73,11 +81,14 @@ public class UserDao {
 		if (db.isOpen()) {
 			Cursor cursor = db.rawQuery("select * from " + TABLE_NAME /* + " desc" */, null);
 			while (cursor.moveToNext()) {
-				String username = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_ID));
+				String username = cursor.getString(cursor.getColumnIndex(COLUMN_ID));
 				String nick = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_NICK));
+				String headUrl = cursor.getString(cursor.getColumnIndex(COLUMN_HEADURL));
 				User user = new User();
 				user.setUsername(username);
+				user.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
 				user.setNick(nick);
+				user.setHeadUrl(headUrl);
 				String headerName = null;
 				if (!TextUtils.isEmpty(user.getNick())) {
 					headerName = user.getNick();
@@ -85,7 +96,7 @@ public class UserDao {
 					headerName = user.getUsername();
 				}
 				
-				if (username.equals(Constant.NEW_FRIENDS_USERNAME) || username.equals(Constant.GROUP_USERNAME)) {
+				if (Constant.NEW_FRIENDS_USERNAME.equals(username) || Constant.GROUP_USERNAME.equals(username)) {
 					user.setHeader("");
 				} else if (Character.isDigit(headerName.charAt(0))) {
 					user.setHeader("#");
@@ -111,7 +122,7 @@ public class UserDao {
 	public void deleteContact(String username){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		if(db.isOpen()){
-			db.delete(TABLE_NAME, COLUMN_NAME_ID + " = ?", new String[]{username});
+			db.delete(TABLE_NAME, COLUMN_ID + " = ?", new String[]{username});
 		}
 	}
 	
@@ -122,17 +133,34 @@ public class UserDao {
 	public void saveContact(User user){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put(COLUMN_NAME_ID, user.getId());
-		values.put(COLUMN_NAME, user.getUsername());
-		
-		if(user.getUserJson() != null){
-		    
-		    values.put(COLUMNJSON, AESCipher.decrypt(AESCipher.key, user.getUserJson()));
-		}
+		values.put(COLUMN_ID, user.getId());
+		values.put(COLUMN_NAME, user.getName());
+		values.put(COLUMN_HEADURL, user.getHeadUrl());
 		if(user.getNick() != null)
 		    values.put(COLUMN_NAME_NICK, user.getNick());
 		if(db.isOpen()){
 			db.replace(TABLE_NAME, null, values);
 		}
+	}
+	
+	/**
+	 * 获取一个联系人
+	 * @param user
+	 */
+	public User getContactById(String id){
+
+	    SQLiteDatabase db = dbHelper.getReadableDatabase();
+	    if (db.isOpen()) {
+            Cursor cursor = db.rawQuery("select * from " + TABLE_NAME +" where id =?",  new String[]{id});
+            if(cursor.moveToNext()){  
+            	User user = new User();;
+                user.setId(cursor.getString(cursor.getColumnIndex(COLUMN_ID)));
+                user.setHeadUrl(cursor.getString(cursor.getColumnIndex(COLUMN_HEADURL)));
+                user.setName(cursor.getString(cursor.getColumnIndex(COLUMN_NAME)));
+                return user;  
+            }  
+            return null;
+         }
+	    return null;
 	}
 }

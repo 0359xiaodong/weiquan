@@ -18,7 +18,7 @@ public class TimeUtil {
 	public final static String FORMAT_MONTH_DAY_TIME_EN = "MM-dd hh:mm";
 	
 	public final static String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
-	public final static String FORMAT_DATE1_TIME = "yyyy/MM/dd HH:mm";
+	public final static String FORMAT_DATE_TIME_S = "yyyy-MM-dd HH:mm";
 	public final static String FORMAT_DATE_TIME_SECOND = "yyyy_MM_dd_HH_mm_ss";
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat();

@@ -1,6 +1,6 @@
 package itstudio.instructor.util;
 
-import com.easemob.chatuidemo.MyApplication;
+import itstudio.instructor.config.MyApplication;
 
 import android.app.Activity;
 import android.content.Context;

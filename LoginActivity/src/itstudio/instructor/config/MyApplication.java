@@ -1,24 +1,11 @@
-/**
- * Copyright (C) 2013-2014 EaseMob Technologies. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.easemob.chatuidemo;
+package itstudio.instructor.config;
 
 import itstudio.instructor.entity.User;
-
 import java.util.Map;
 import android.app.Application;
 import android.content.Context;
 import com.easemob.EMCallBack;
+import com.easemob.chatuidemo.DemoHXSDKHelper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -26,6 +13,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+
+import copy.util.Tools;
 
 public class MyApplication extends Application {
 
@@ -51,32 +40,16 @@ public class MyApplication extends Application {
         instance = this;
         isDownload = false;
         instance = this;
+        Tools.setContext(this);
         initImageLoader(getApplicationContext());
         hxSDKHelper.onInit(applicationContext);
         if(getUserJson()!=null){
-            System.out.println(getUserJson());
+            Tools.log("has login before");
             Gson gson = new Gson();
             user =  gson.fromJson(getUserJson(),new TypeToken<User>() {}.getType());
         }
-        /**
-         * this function will initialize the HuanXin SDK
-         * 
-         * @return boolean true if caller can continue to call HuanXin related APIs after calling onInit, otherwise false.
-         * 
-         * 环信初始化SDK帮助函数
-         * 返回true如果正确初始化，否则false，如果返回为false，请在后续的调用中不要调用任何和环信相关的代码
-         * 
-         * for example:
-         * 例子：
-         * 
-         * public class DemoHXSDKHelper extends HXSDKHelper
-         * 
-         * HXHelper = new DemoHXSDKHelper();
-         * if(HXHelper.onInit(context)){
-         *     // do HuanXin related work
-         * }
-         */
-       
+
+        hxSDKHelper.onInit(applicationContext);
 	}
 
 	public static MyApplication getInstance() {

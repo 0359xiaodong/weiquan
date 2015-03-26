@@ -13,6 +13,8 @@
  */
 package com.easemob.chatuidemo.activity;
 
+import itstudio.instructor.config.MyApplication;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,7 +80,6 @@ import com.easemob.chat.NormalFileMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.easemob.chat.VideoMessageBody;
 import com.easemob.chat.VoiceMessageBody;
-import com.easemob.chatuidemo.MyApplication;
 import com.easemob.chatuidemo.R;
 import com.easemob.chatuidemo.adapter.ExpressionAdapter;
 import com.easemob.chatuidemo.adapter.ExpressionPagerAdapter;
@@ -93,6 +94,9 @@ import com.easemob.exceptions.EaseMobException;
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
 import com.easemob.util.VoiceRecorder;
+
+import copy.util.NameUrlUtils;
+import copy.util.StringRunnable;
 
 /**
  * 聊天页面
@@ -162,6 +166,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	public static ChatActivity activityInstance = null;
 	// 给谁发送消息
 	private String toChatUsername;
+	private String name;
 	private VoiceRecorder voiceRecorder;
 	private MessageAdapter adapter;
 	private File cameraFile;
@@ -309,11 +314,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		if (chatType == CHATTYPE_SINGLE) { // 单聊
 			toChatUsername = getIntent().getStringExtra("userId");
-			((TextView) findViewById(R.id.name)).setText(toChatUsername);
-			
+			name = getIntent().getStringExtra("name");
+			final TextView nameTv= (TextView) findViewById(R.id.name);
+			if(name!=null){
+			    nameTv.setText(name);
+			}else{
+			    NameUrlUtils.setNickName(toChatUsername, new StringRunnable() {
+			        @Override
+			        public void run(String str) {
+			            nameTv.setText(str);
+			        }
+			    });
+			}
 			// 再此获取头像
-			
-			
 			// conversation =
 			// EMChatManager.getInstance().getConversation(toChatUsername,false);
 		} else {
@@ -884,22 +897,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 * @param view
 	 */
 	public void setModeKeyboard(View view) {
-		// mEditTextContent.setOnFocusChangeListener(new OnFocusChangeListener()
-		// {
-		// @Override
-		// public void onFocusChange(View v, boolean hasFocus) {
-		// if(hasFocus){
-		// getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		// }
-		// }
-		// });
+
 		edittext_layout.setVisibility(View.VISIBLE);
 		more.setVisibility(View.GONE);
 		view.setVisibility(View.GONE);
 		buttonSetModeVoice.setVisibility(View.VISIBLE);
-		// mEditTextContent.setVisibility(View.VISIBLE);
 		mEditTextContent.requestFocus();
-		// buttonSend.setVisibility(View.VISIBLE);
 		buttonPressToSpeak.setVisibility(View.GONE);
 		if (TextUtils.isEmpty(mEditTextContent.getText())) {
 			btnMore.setVisibility(View.VISIBLE);
@@ -939,7 +942,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	 */
 	public void more(View view) {
 		if (more.getVisibility() == View.GONE) {
-			System.out.println("more gone");
 			hideKeyboard();
 			more.setVisibility(View.VISIBLE);
 			btnContainer.setVisibility(View.VISIBLE);
@@ -990,28 +992,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			// 如果是群聊消息，获取到group id
 			if (message.getChatType() == ChatType.GroupChat) {
 				username = message.getTo();
-				System.out.println("username-group"+username);
 			}
 			if (!username.equals(toChatUsername)) {
 				// 消息不是发给当前会话，return
 			    notifyNewMessage(message);
 				return;
 			}
-			
-			
-			
-/*		     if (from.equals("history")) {// 从本地缓存中获取
-		            nameTextView.setText(talkToId);
-		            if (!GroupUtils.isGroup(talkToId))
-		                NameUrlUtils.setNickNameAndHead(nameTextView, null, talkToId);
-		            else
-		                NameUrlUtils.setGroupName(talkToId, nameTextView);
-		        } else if (from.equals("friends") || from.equals("group")) {
-		            String name = in.getStringExtra("name");
-		            if (name.startsWith("_") && from.equals("group"))
-		                name = name.substring(1, name.length());
-		            nameTextView.setText(name);
-		        }*/
 			
 			// conversation =
 			// EMChatManager.getInstance().getConversation(toChatUsername);
